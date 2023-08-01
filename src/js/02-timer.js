@@ -17,43 +17,49 @@ const options = {
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  onClose(selectedDates) {
-    if (selectedDates[0] <= Date.now()) {
-      Notiflix.Notify.failure('Please choose a date in the future');
-      refs.btnStart.disabled = true;
-    } else {
-      refs.btnStart.disabled = false;
-    }
-
-    let isActive = false;
-    let interval = 0;
-
-    function start() {
-      clearInterval(interval);
-      if (isActive) {
-        return;
-      }
-
-      const startTime = selectedDates[0];
-
-      isActive = true;
-
-      interval = setInterval(() => {
-        const currentTime = Date.now();
-        const deltaTime = startTime - currentTime;
-        if (deltaTime <= 0) {
-          clearInterval(interval);
-        } else {
-          const time = convertMs(deltaTime);
-          updateClockTime(time);
-          console.log(time);
-        }
-      }, 1000);
-    }
-    refs.btnStart.addEventListener('click', start);
-  },
+  onClose(selectedDates) {},
 };
-flatpickr('input#datetime-picker', options);
+
+let isActive = false;
+let interval = 0;
+
+function flatpickr(selectedDates) {
+  if (selectedDates[0] <= Date.now()) {
+    Notiflix.Notify.failure('Please choose a date in the future');
+    refs.btnStart.disabled = true;
+  } else {
+    refs.btnStart.disabled = false;
+  }
+}
+
+flatpickr('input#datetime-picker', options.onClose(selectedDates));
+
+refs.btnStart.addEventListener('click', start);
+
+function start() {
+  clearInterval(interval);
+  if (isActive) {
+    return;
+  }
+
+  const startTime = selectedDates[0];
+
+  isActive = true;
+
+  interval = setInterval(() => {
+    refs.date.disabled = true;
+    const currentTime = Date.now();
+    const deltaTime = startTime - currentTime;
+    if (deltaTime <= 0) {
+      refs.date.disabled = false;
+      clearInterval(interval);
+    } else {
+      const time = convertMs(deltaTime);
+      updateClockTime(time);
+      console.log(time);
+    }
+  }, 1000);
+}
 
 function addLeadingZero(value) {
   return String(value).padStart(2, '0');

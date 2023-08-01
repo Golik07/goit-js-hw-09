@@ -12,12 +12,12 @@ function submitForm(event) {
   const delayStep = parseInt(step.value);
   const promiseAmount = parseInt(amount.value);
 
-  if (firstDelay < 0 && delay < 0 && promiseAmount <= 0) {
-    Notiflix.Notify.failure('Values cannot be negative');
-    return;
+  if (firstDelay < 0 || delayStep < 0 || promiseAmount <= 0) {
+    return Notiflix.Notify.failure('Values cannot be negative');
   }
   for (let i = 1; i <= promiseAmount; i += 1) {
     const currentDelay = firstDelay + (i - 1) * delayStep;
+
     createPromise(i, currentDelay)
       .then(({ position, delay }) => {
         Notiflix.Notify.success(
